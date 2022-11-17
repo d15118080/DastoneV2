@@ -19,12 +19,13 @@ Route::prefix('/v1')->group(function () {
     Route::prefix('/user')->group(function () {
         Route::post('/auth_check', [UserController::class, 'Auth_Check']);
 
-
         Route::middleware('auth:sanctum')->group(function () {
             Route::get('/token_check', function () {return true;}); //토큰 유효여부 체크
             Route::post('/charge_send', [TransactionController::class, 'Charge_Request']); //충전신청
             Route::post('/remittance_send', [TransactionController::class, 'Remittance_Request']); //출금 신청
             Route::post('/bank_check', [TransactionController::class, 'Bank_Check']); //계좌 소유자 확인
+            Route::post('/franchisees_add', [UserController::class, 'franchisees_add_req']); //가맹점 추가
+            Route::post('/branchs_add', [UserController::class, 'branchs_add_req']); //가맹점 추가
 
         });
 

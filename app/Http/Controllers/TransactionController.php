@@ -108,6 +108,9 @@ class TransactionController extends Controller
         }
         $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
         $money = User::where('identification', $request->user()->identification)->value('money');
+        if(User::where('identification', $request->user()->identification)->value('state') == 10){
+            return Return_json('9999', 1, "거래 할수없는 계정입니다.", 422, null);
+        }
         $r_m = 0;
         foreach ($request->data as $row) {
             $r_m = $r_m + $row['money'];
@@ -183,8 +186,29 @@ class TransactionController extends Controller
             $data = user_transaction_history_table::where('id', $id)->first();
             if ($data->trxtype == "CS") {
                 user_transaction_history_table::where('id', $id)->update(['trxtype' => 'CO']);
-                $up_money = $data->amount + User::where('identification', $data->identification)->value('money');
+                $f_mar = User::where('identification', $data->identification)->value('user_margin'); //가맹점 마진
+                $pk_id = User::where('identification', $data->identification)->value('pk_id'); //가맹점 연결 지사
+                $p_mar = User::where('identification', $pk_id)->value('user_margin'); //지사 마진
+
+                $f_money_re = $data->amount * $f_mar; // 가맹점 수수료 빼기
+                $f_money = $data->amount - $f_money_re; //가맹점 실 적립 금액
+
+                $p_money_re = $data->amount * $p_mar; // 지사 수수료 (본사에게 올려줘야 할것)
+                $p_money = $f_money_re - $p_money_re; //실 지사 적립금
+
+                //가맹점 금액 업데이트
+                $up_money = $f_money + User::where('identification', $data->identification)->value('money');
                 User::where('identification', $data->identification)->update(['money' => $up_money]);
+
+                //지사 금액 업데이트
+                $up_money = $p_money + User::where('identification', $pk_id)->value('money');
+                User::where('identification', $pk_id)->update(['money' => $up_money]);
+
+                //본시 금액 업데이트
+                $up_money = $p_money_re + User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->value('money');
+                User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->update(['money' => $up_money]);
+
+
                 return redirect('/management');
             } elseif ($data->trxtype == "SS") {
                 user_transaction_history_table::where('id', $id)->update(['trxtype' => 'SO']);

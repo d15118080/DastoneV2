@@ -76,6 +76,9 @@
                                                 <th class="">하부 가맹점</th>
                                                 <th class="">생성 날짜</th>
                                                 <th class="">거래 상태</th>
+                                                @if(session('state') == 0)
+                                                <th class="">거래 상태 수정</th>
+                                                @endif
                                             </tr>
                                             </thead>
 
@@ -94,6 +97,13 @@
                                                 <td class="text-info">정상</td>
                                                 @endif
                                                 {{-- text-info 정상 / text-danger 충전 text-danger 차단   --}}
+                                                                                                 @if(session('state') == 0)
+                                                 @if($row->state == 10)
+                                                <td><a href="/user_state_change?id={{$row->id}}&mode=0&s=1" class="btn btn-outline-success ml-2">정상 으로 변경</a> </td>
+                                                @else
+                                                <td><a href="/user_state_change?id={{$row->id}}&mode=1&s=1" class="btn btn-outline-danger">차단 으로 변경</a></td>
+                                                @endif
+                                                @endif
                                             </tr>
                                             @endforeach
                                             @endif

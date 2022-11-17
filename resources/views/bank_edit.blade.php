@@ -73,29 +73,32 @@
                                     <fieldset>
                                         <div class="repeater-default">
                                             <div data-repeater-list="car">
+                                                <form action="/bank_edit" method="post">
+                                                    @csrf
                                                 <div data-repeater-item="">
                                                     <div class="form-group row d-flex align-items-end">
 
                                                         <div class="col-sm-3">
                                                             <label class="form-label">은행</label>
-                                                            <input type="text" id="charge_name" value="{{$data->bank_name}}"
+                                                            <input type="text" name="bank_name" value="{{$data->bank_name}}"
                                                                 class="form-control">
                                                         </div>
 
                                                         <div class="col-sm-3">
                                                          <label class="form-label">계좌번호</label>
                                                             <div class="input-group">
-                                                                <input type="text" class="form-control" id="charge_money" value="{{$data->bank_number}}" placeholder="숫자로만 적어주세요" aria-describedby="basic-money"  >
+                                                                <input type="text" class="form-control" name="bank_number" value="{{$data->bank_number}}" placeholder="숫자로만 적어주세요" aria-describedby="basic-money"  >
                                                             </div>
                                                         </div>
                                                         <!--end col-->
                                                         <div class="col-sm-1">
-                                                            <button id="charge_add" class="btn btn-outline-info">
+                                                            <button type="submit" class="btn btn-outline-info">
                                                                 수정
                                                             </button>
                                                         </div>
                                                         <!--end col-->
                                                     </div>
+                                                    </form>
                                                     <!--end row-->
                                                 </div>
                                                 <!--end /div-->

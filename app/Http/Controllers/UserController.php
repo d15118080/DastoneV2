@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\bank;
 use App\Models\Personal_access_tokens;
 use App\Models\User;
 use App\Models\user_transaction_history_table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\bank;
 
 class UserController extends Controller
 {
@@ -297,7 +297,7 @@ class UserController extends Controller
             if (User::where([['user_state', '1']])->exists()) {
                 $Users = User::where('user_state', '1')->get();
                 foreach ($Users as $row) {
-                    $row['count'] = User::where('pk_id', $row->pk_id)->count();
+                    $row['count'] = User::where('pk_id', $row->identification)->count();
                 }
                 return view('branchs', ['Data' => $Users]);
 
@@ -307,23 +307,164 @@ class UserController extends Controller
         }
     }
 
-    //계좌 수정 등록
-    public function Bank_edit (Request $request){
-        if(session('state') == 0){
-            $data = bank::where('id','1')->first();
-            return view('bank_edit',['data'=>$data]);
+    //계좌 수정 등록 페이지
+    public function Bank_edit(Request $request)
+    {
+        if (session('state') == 0) {
+            $data = bank::where('id', '1')->first();
+            return view('bank_edit', ['data' => $data]);
         }
     }
 
+    //계좌 수정 등록
+    public function Bank_edit_req(Request $request)
+    {
+        if (session('state') == 0) {
+            $bank_name = $request->bank_name;
+            $bank_number = $request->bank_number;
+            bank::where('id', 1)->update(['bank_name' => $bank_name]);
+            bank::where('id', 1)->update(['bank_number' => $bank_number]);
+            return redirect('/bank_edit');
+        }
+    }
 
     //충전 페이자
-    public function charge (Request $request){
+    public function charge(Request $request)
+    {
 
-            $data = bank::where('id','1')->first();
-            return view('charge',['data'=>$data]);
+        $data = bank::where('id', '1')->first();
+        return view('charge', ['data' => $data]);
 
     }
 
+    //가맹점 추가 페이지
+    public function franchisees_add(Request $request)
+    {
+        $branchs = User::where('user_state', 1)->get();
+        return view('franchisees_or_branch_add', ['mode' => 0, 'branchs' => $branchs]);
+    }
 
+    //가맹점 추가 로직
+    public function franchisees_add_req(Request $request)
+    {
+        $pk_id = $request->pk_id; //연결 할 지사
+        $user_name = $request->user_name; //가맹점 이름
+        $user_id = $request->user_id;
+        $user_password = $request->user_password; //가맹점 비밀번호
+        $user_margin = $request->user_margin; //가맹점 마진
+
+        if ($pk_id == "") {
+            return Return_json("9999", 1, "연결할 지사를 선택해주세요.", 422, null);
+        }
+        if ($user_name == "") {
+            return Return_json("9999", 1, "가맹점 이름을 ₩입력해주세요.", 422, null);
+        }
+        if ($user_password == "") {
+            return Return_json("9999", 1, "가맹점 비밀번호 를 입력해주세요.", 422, null);
+        }
+
+        if ($user_margin == "") {
+            return Return_json("9999", 1, "가맹점 마진을 입력해주세요.", 422, null);
+        }
+        if ($user_id == "") {
+            return Return_json("9999", 1, "가맹점 아이디를 입력해주세요.", 422, null);
+        }
+
+        if (User::where('user_id', $user_id)->exists()) {
+            return Return_json("9999", 1, "사용할수 없는 아이디 입니다.", 422, null);
+        }
+
+        User::insert([
+            'fk_id' => '',
+            'pk_id' => $pk_id,
+            'ck_id' => get_uuid_v3(),
+            'identification' => get_uuid_v4(),
+            'user_id' => $user_id,
+            'user_password' => Hash::make($user_password),
+            'user_name' => $user_name,
+            'user_state' => 2,
+            'user_margin' => $user_margin / 100,
+            'user_reg_date' => date('Y-m-d'),
+            'user_reg_time' => date('H:i:s'),
+            'money' => 0,
+        ]);
+        return Return_json("0000", 1, "가맹점 생성이 완료 되었습니다.", 200, null);
+
+    }
+
+    //지사 추가 로직
+    public function branchs_add_req(Request $request)
+    {
+        $user_name = $request->user_name; //지사 이름
+        $user_id = $request->user_id;
+        $user_password = $request->user_password; //지사 비밀번호
+        $user_margin = $request->user_margin; //지사 마진
+
+        if ($user_name == "") {
+            return Return_json("9999", 1, "지사 이름을 입력해주세요.", 422, null);
+        }
+        if ($user_password == "") {
+            return Return_json("9999", 1, "지사 비밀번호 를 입력해주세요.", 422, null);
+        }
+
+        if ($user_margin == "") {
+            return Return_json("9999", 1, "지사 마진을 입력해주세요.", 422, null);
+        }
+        if ($user_id == "") {
+            return Return_json("9999", 1, "지사 아이디를 입력해주세요.", 422, null);
+        }
+
+        if (User::where('user_id', $user_id)->exists()) {
+            return Return_json("9999", 1, "사용할수 없는 아이디 입니다.", 422, null);
+        }
+
+        User::insert([
+            'fk_id' => 'DS_7b0d4a37-5552-49f1-9cfb-a466',
+            'pk_id' => '',
+            'ck_id' => get_uuid_v3(),
+            'identification' => get_uuid_v4(),
+            'user_id' => $user_id,
+            'user_password' => Hash::make($user_password),
+            'user_name' => $user_name,
+            'user_state' => 1,
+            'user_margin' => $user_margin / 100,
+            'user_reg_date' => date('Y-m-d'),
+            'user_reg_time' => date('H:i:s'),
+            'money' => 0,
+        ]);
+        return Return_json("0000", 1, "지사 생성이 완료 되었습니다.", 200, null);
+
+    }
+
+    //유저 거래 상태변경
+    public function user_state_change(Request $request)
+    {
+        $mode = $_GET['mode'];
+        $s = $_GET['s']; //가맹점인지 지사인지
+        $id = $_GET['id'];
+
+        if ($mode == 1) { //차단
+            if ($s == 2) {
+                User::where('id', $id)->update(['state' => 10]);
+                return redirect('/franchisees');
+            } else {
+                User::where('id', $id)->update(['state' => 10]);
+                return redirect('/branchs');
+            }
+
+        } elseif ($mode == 0) {
+            //가맹점
+            if ($s == 2) {
+                User::where('id', $id)->update(['state' => 0]);
+                return redirect('/franchisees');
+                //지사
+            } elseif ($s == 1) {
+                User::where('id', $id)->update(['state' => 0]);
+                return redirect('/franchisees');
+            }
+
+        }
+
+    }
 
 } //클래스 끝

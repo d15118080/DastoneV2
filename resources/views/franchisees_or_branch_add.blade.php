@@ -81,18 +81,23 @@
                             <div class="card-body bootstrap-select-1">
                                 <div class="row">
                                     <div class="col-md">
-                                        @if($mode == 1)
+                                        @if($mode == 0)
                                         <label class="mb-3">연결할 지사</label>
-                                        <select class="select2 form-control mb-3 custom-select"
+                                        <select id="pk_id" class="select2 form-control mb-3 custom-select"
                                             style="width: 100%; height:36px;">
-                                            <option>Select</option>
-                                            <option value="AK">Alaska</option>
-                                            <option value="HI">Hawaii</option>
+                                            <option>--선택--</option>
+                                            @if(!$branchs=="")
+                                            @foreach ($branchs as $row )
+                                            <option value="{{$row->identification}}">{{$row->user_name}}</option>
+                                            @endforeach
+                                            @else
+                                            <option value="">지사 없음</option>
+                                            @endif
                                         </select>
                                         @endif
                                         <div class="mt-3">
                                             <label class="mb-2">{{$mode_name}} 이름</label>
-                                            <input type="text" class="form-control" id="franchisee_name" />
+                                            <input type="text" class="form-control" id="user_name" />
                                         </div>
                                         <div class="mt-3">
                                             <label class="mb-2">{{$mode_name}} 아이디</label>
@@ -108,10 +113,10 @@
                                                 <p class="text-muted mb-3 font-13">
                                                     0.10 은 0.1% 입니다.
                                                 </p>
-                                                <input id="demo1" type="text" value="0" name="commission">
+                                                <input id="user_margin" type="text" value="0" name="commission">
                                             </div>
                                         </div>
-                                        <div style="text-align: right;"><button  type="button" class="btn btn-outline-success ml-2">생성</button></div>
+                                        <div style="text-align: right;"><button  type="button" class="btn btn-outline-success ml-2" id="req">생성</button></div>
 
                                     </div><!-- end col -->
                                 </div><!-- end row -->
@@ -154,6 +159,13 @@
 
     <!-- App js -->
     <script src="/assets/js/app.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    @if($mode == 0)
+    <script src="/assets/c_js/franchisees_add.js"></script>
+    @else
+    <script src="/assets/c_js/branch_add.js"></script>
+    @endif
 
 </body>
 

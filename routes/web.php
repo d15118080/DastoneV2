@@ -32,15 +32,15 @@ Route::get('/management', [TransactionController::class,'management_list']); //ì
 Route::get('/branchs', [UserController::class,'branchs'])->middleware('Token_Check');
 Route::get('/franchisees', [UserController::class,'franchisees']);
 
-Route::get('/franchisees_add', function () {
-    return view('franchisees_or_branch_add', ['mode' => 0]);
-});
+Route::get('/franchisees_add', [UserController::class,'franchisees_add']);
+
 
 Route::get('/branch_add', function () {
     return view('franchisees_or_branch_add', ['mode' => 1]);
 });
 
 Route::get('/state_change',[TransactionController::class,'state_change'])->middleware('Token_Check');
+Route::get('/user_state_change', [UserController::class, 'user_state_change'])->middleware('Token_Check');
 
 
 Route::get('/logout', function () {
@@ -51,3 +51,4 @@ Route::get('/logout', function () {
 
 
 Route::get('/bank_edit',[UserController::class,'Bank_edit'])->middleware('Token_Check');
+Route::post('/bank_edit', [UserController::class, 'Bank_edit_req'])->middleware('Token_Check');

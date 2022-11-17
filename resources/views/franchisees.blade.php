@@ -76,6 +76,9 @@
                                                 <th class="">가맹점 수수료</th>
                                                 <th class="">생성 날짜</th>
                                                 <th class="">거래 상태</th>
+                                                @if(session('state') == 0)
+                                                <th class="">거래 상태 수정</th>
+                                                @endif
                                             </tr>
                                             </thead>
 
@@ -88,12 +91,19 @@
                                                 <td>{{$row->user_name}}<small class="text-muted">({{$row->user_id}})</small></td>
                                                 <td><?php echo $row->user_margin *100 ?>%</td>
                                                 <td>{{$row->user_reg_date}}</td>
-                                                @if($row->user_state == 10)
+                                                @if($row->state == 10)
                                                 <td class="text-danger">차단</td>
                                                 @else
                                                 <td class="text-info">정상</td>
                                                 @endif
                                                 {{-- text-info 정상 / text-danger 충전 text-danger 차단   --}}
+                                                 @if(session('state') == 0)
+                                                 @if($row->state == 10)
+                                                <td><a href="/user_state_change?id={{$row->id}}&mode=0&s=2" class="btn btn-outline-success ml-2">정상 으로 변경</a> </td>
+                                                @else
+                                                <td><a href="/user_state_change?id={{$row->id}}&mode=1&s=2" class="btn btn-outline-danger">차단 으로 변경</a></td>
+                                                @endif
+                                                @endif
                                             </tr>
                                             @endforeach
                                             @endif
