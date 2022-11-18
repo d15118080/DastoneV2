@@ -20,11 +20,10 @@ class TelegramController extends Controller
         $text = $updates['message']['text'];
         if (substr($text, 0, 4) == "/set") {
             $key = substr($text, 5);
-
             if (Telegarm_set::where('ck_id', $key)->exists()) {
                 $telegram->sendMessage([
                     'chat_id' => $userid,
-                    'text' => "이미 등록되어 있습니다 관리자에게 문의 하세요.",
+                    'text' => "기등록 사용자입니다 관리자에게 문의해주세요.",
                 ]);
 
             } else {

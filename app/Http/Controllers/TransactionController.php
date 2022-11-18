@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Telegarm_set;
 use App\Models\User;
 use App\Models\user_transaction_history_table;
 use Illuminate\Http\Request;
@@ -199,6 +200,13 @@ class TransactionController extends Controller
                 //가맹점 금액 업데이트
                 $up_money = $f_money + User::where('identification', $data->identification)->value('money');
                 User::where('identification', $data->identification)->update(['money' => $up_money]);
+                $f_ck_id = User::where('identification', $data->identification)->value('ck_id'); //가맹점 키
+                if(Telegarm_set::where('ck_id',$f_ck_id)->exists()){
+                    $chat_id = Telegarm_set::where('ck_id',$f_ck_id)->value('chat_id');
+                    $money_nu = number_format($data->amount);
+                    $up_money_nu = number_format($up_money);
+                    Telegram_send($chat_id,"*다스톤 충전완료* 입금자 : $data->user_name 입금 금액 : $money_nu 입금후 잔액 : $up_money_nu");
+                }
 
                 //지사 금액 업데이트
                 $up_money = $p_money + User::where('identification', $pk_id)->value('money');
