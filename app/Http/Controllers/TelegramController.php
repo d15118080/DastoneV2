@@ -19,7 +19,7 @@ class TelegramController extends Controller
         $api_key = explode(' ', $text);
         $telegram->sendMessage([
             'chat_id' => $userid,
-            'text' => "[테스트 가맹점] $username($userid) $api_key 님 등록되었습니다",
+            'text' => "[테스트 가맹점] $username($userid) $api_key[1] 님 등록되었습니다",
         ]);
 
 
