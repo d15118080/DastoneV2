@@ -24,10 +24,10 @@ class TransactionController extends Controller
             return Return_json('9999', 1, "값이 존재하지 않습니다.", 422, null);
         }
         $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
-        $user_name = User::where('identification', $request->user()->identification)->value('user_name');
+        $user_name = $request->user()->user_name;
         if (Telegarm_set::where('ck_id', 'admin')->exists()) {
             $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
-            Telegram_send($chat_id, "ㅏㅓㅗㅗㅓㅓㅗㅠ");
+            Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n관리자에서 확인해주세요.");
         }
 
         foreach ($request->data as $row) {
