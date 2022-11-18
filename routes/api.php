@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
  */
 Route::prefix('/v1')->group(function () {
+    Route::post('/telegram/hooks',[TelegramController::class,'Telegram']);
     //사용자 Prefix
     Route::prefix('/user')->group(function () {
         Route::post('/auth_check', [UserController::class, 'Auth_Check']);
