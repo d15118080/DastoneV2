@@ -205,8 +205,7 @@ class TransactionController extends Controller
                     $chat_id = Telegarm_set::where('ck_id',$f_ck_id)->value('chat_id');
                     $money_nu = number_format($data->amount);
                     $up_money_nu = number_format($up_money);
-                    // Telegram_send($chat_id,"*다스톤 충전완료* 입금자 : $data->user_name 입금 금액 : $money_nu 입금후 잔액 : $up_money_nu");
-                    Telegram_send($chat_id,'aa');
+                    Telegram_send($chat_id,"*다스톤 충전완료* 입금자 : $data->user_name 입금 금액 : $money_nu 입금후 잔액 : $up_money_nu");
                 }
 
                 //지사 금액 업데이트
