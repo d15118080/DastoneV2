@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Telegarm_set extends Model
 {
     use HasFactory;
-
+      protected $table = "telegarm_sets";
         protected $fillable = [
         'id',
         'ck_id',
