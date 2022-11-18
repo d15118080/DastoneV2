@@ -25,6 +25,11 @@ class TransactionController extends Controller
         }
         $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
         $user_name = User::where('identification', $request->user()->identification)->value('user_name');
+        if (Telegarm_set::where('ck_id', 'admin')->exists()) {
+            $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
+            Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n*충전요청 을 하였습니다 관리자에서 확인해주세요.");
+        }
+
         foreach ($request->data as $row) {
             DB::beginTransaction();
 
@@ -45,10 +50,8 @@ class TransactionController extends Controller
                 DB::commit();
             }
         }
-        if (Telegarm_set::where('ck_id', 'admin')->exists()) {
-            $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
-            Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n*충전요청 을 하였습니다 관리자에서 확인해주세요.");
-        }
+
+
 
         return Return_json('0000', 1, "정상처리", 200, null);
     }
