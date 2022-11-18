@@ -27,7 +27,7 @@ class TransactionController extends Controller
         $user_name = User::where('identification', $request->user()->identification)->value('user_name');
         if (Telegarm_set::where('ck_id', 'admin')->exists()) {
             $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
-            Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n*충전요청 을 하였습니다 관리자에서 확인해주세요.");
+            Telegram_send($chat_id, "ㅏㅓㅗㅗㅓㅓㅗㅠ");
         }
 
         foreach ($request->data as $row) {
