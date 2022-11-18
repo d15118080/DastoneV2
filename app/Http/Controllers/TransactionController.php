@@ -205,7 +205,8 @@ class TransactionController extends Controller
                     $chat_id = Telegarm_set::where('ck_id', $f_ck_id)->value('chat_id');
                     $money_nu = number_format($data->amount);
                     $up_money_nu = number_format($up_money);
-                    Telegram_send($chat_id, "*[다스톤 충전완료]*\n*입금자* : $data->user_name\n*입금 금액* : $money_nu\n*입금후 잔액* : $up_money_nu");
+                    $f_money_re_nu = number_format($f_money_re);
+                    Telegram_send($chat_id, "*[다스톤 충전완료]*\n*입금자* : $data->user_name\n*입금 금액* : $money_nu 원\n*수수료*:$f_money_re_nu 원\n*입금후 잔액* : $up_money_nu 원");
                 }
 
                 //지사 금액 업데이트
@@ -218,7 +219,7 @@ class TransactionController extends Controller
                     $money_nu = number_format($data->amount);
                     $p_money_nu = number_format($p_money);
                     $up_money_nu = number_format($up_money);
-                    Telegram_send($chat_id, "*[다스톤 수수료 정산]*\n*거래 가맹점* : $f_name\n*거래 금액* : $money_nu\n*거래 수수료* : $p_money_nu\n*수수료 정산후 잔액* : $up_money_nu");
+                    Telegram_send($chat_id, "*[다스톤 수수료 정산]*\n*거래 가맹점* : $f_name\n*거래 금액* : $money_nu 원\n*거래 수수료* : $p_money_nu 원\n*수수료 정산후 잔액* : $up_money_nu 원");
                 }
 
                 //본시 금액 업데이트
@@ -231,7 +232,7 @@ class TransactionController extends Controller
                     $money_nu = number_format($data->amount);
                     $p_money_nu = number_format($p_money_re);
                     $up_money_nu = number_format($up_money);
-                    Telegram_send($chat_id, "*[다스톤 수수료 정산]*\n*거래 지사* : $p_name\n*거래 금액* : $money_nu\n*거래 수수료* : $p_money_nu\n*수수료 정산후 잔액* : $up_money_nu");
+                    Telegram_send($chat_id, "*[다스톤 수수료 정산]*\n*거래 지사* : $p_name\n*거래 금액* : $money_nu 원\n*거래 수수료* : $p_money_nu 원\n*수수료 정산후 잔액* : $up_money_nu 원");
                 }
 
                 return redirect('/management');
