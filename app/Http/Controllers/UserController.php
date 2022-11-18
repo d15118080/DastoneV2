@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\user_transaction_history_table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 
 class UserController extends Controller
 {
@@ -464,6 +465,37 @@ class UserController extends Controller
             }
 
         }
+
+    }
+
+
+    public function User_edit(Request $request){
+        $user_id = $_GET['ck_id'];
+        $url = $request->fullUrl();
+        $data = User::where('ck_id',$user_id)->first();
+        return view('admin_user_edit',['data'=>$data,'url'=>$url]);
+    }
+
+        public function User_edit_req(Request $request){
+        $re_url = $request->re_url;
+        $user_name = $request->user_name;
+        $user_margin = $request->user_margin/100;
+        $user_password = $request->user_password;
+        $ck_id = $request->ck_id;
+        $re_user_name = User::where('ck_id',$ck_id)->value('user_name');
+        $re_user_margin = User::where('ck_id', $ck_id)->value('user_margin');
+
+        if($user_name != $re_user_name ){
+            User::where('ck_id', $ck_id)->update(['user_name' => $user_name]);
+        }
+        if($re_user_margin != $user_margin){
+            User::where('ck_id', $ck_id)->update(['user_margin' => $user_margin]);
+        }
+        if($user_password !=""){
+            $pass = Hash::make($user_password);
+            User::where('ck_id', $ck_id)->update(['user_password' => $pass]);
+        }
+        return redirect($re_url);
 
     }
 

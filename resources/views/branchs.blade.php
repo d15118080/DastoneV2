@@ -78,6 +78,7 @@
                                                 <th class="">거래 상태</th>
                                                 @if(session('state') == 0)
                                                 <th class="">거래 상태 수정</th>
+                                                <th class="">지사 수정</th>
                                                 @endif
                                             </tr>
                                             </thead>
@@ -103,6 +104,7 @@
                                                 @else
                                                 <td><a href="/user_state_change?id={{$row->id}}&mode=1&s=1" class="btn btn-outline-danger">차단 으로 변경</a></td>
                                                 @endif
+                                                <td><a href="/user_edit?ck_id={{$row->ck_id}}" class="btn btn-outline-info ml-2">수정</a> </td>
                                                 @endif
                                             </tr>
                                             @endforeach

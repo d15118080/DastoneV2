@@ -53,3 +53,7 @@ Route::get('/logout', function () {
 
 Route::get('/bank_edit',[UserController::class,'Bank_edit'])->middleware('Token_Check');
 Route::post('/bank_edit', [UserController::class, 'Bank_edit_req'])->middleware('Token_Check');
+
+Route::get('/user_edit', [UserController::class, 'User_edit'])->middleware('Token_Check');
+ Route::post('/user_edit', [UserController::class, 'User_edit_req'])->middleware('Token_Check');
+

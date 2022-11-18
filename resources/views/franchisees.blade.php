@@ -78,7 +78,9 @@
                                                 <th class="">거래 상태</th>
                                                 @if(session('state') == 0)
                                                 <th class="">거래 상태 수정</th>
+                                                <th class="">가맹점 수정</th>
                                                 @endif
+
                                             </tr>
                                             </thead>
 
@@ -89,7 +91,7 @@
                                                 <td><a class="text-primary">#{{$row->ck_id}}</a></td>
                                                 <td>{{$row->pk_name}}</td>
                                                 <td>{{$row->user_name}}<small class="text-muted">({{$row->user_id}})</small></td>
-                                                <td><?php echo $row->user_margin *100 ?>%</td>
+                                                <td><?php echo $row->user_margin *100 ?>% </td>
                                                 <td>{{$row->user_reg_date}}</td>
                                                 @if($row->state == 10)
                                                 <td class="text-danger">차단</td>
@@ -103,6 +105,7 @@
                                                 @else
                                                 <td><a href="/user_state_change?id={{$row->id}}&mode=1&s=2" class="btn btn-outline-danger">차단 으로 변경</a></td>
                                                 @endif
+                                                <td><a href="/user_edit?ck_id={{$row->ck_id}}" class="btn btn-outline-info ml-2">수정</a> </td>
                                                 @endif
                                             </tr>
                                             @endforeach

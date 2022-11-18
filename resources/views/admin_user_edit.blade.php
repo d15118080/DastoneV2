@@ -4,7 +4,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Dastone - Admin</title>
+        <title>Dastone </title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta content="" name="description" />
         <meta content="" name="author" />
@@ -42,9 +42,9 @@
                             <div class="page-title-box">
                                 <div class="row">
                                     <div class="col">
-                                        <h4 class="page-title">텔레그램 알림 설정</h4>
+                                        <h4 class="page-title">유저 수정</h4>
                                         <ol class="breadcrumb">
-                                            <li class="breadcrumb-item active">텔레그램 알림 설정</li>
+                                          <li class="breadcrumb-item active">유저 수정</li>
                                         </ol>
                                     </div><!--end col-->
                                 </div><!--end row-->
@@ -59,7 +59,7 @@
                             <div class="card-header">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h4 class="card-title">텔레그램 등록</h4>
+                                        <h4 class="card-title">계좌 변경</h4>
                                     </div>
                                     <!--end col-->
                                 </div>
@@ -71,21 +71,42 @@
                                     <fieldset>
                                         <div class="repeater-default">
                                             <div data-repeater-list="car">
+                                                <form action="/user_edit" method="post">
                                                     @csrf
                                                 <div data-repeater-item="">
                                                     <div class="form-group row d-flex align-items-end">
+                                                        <input type="hidden" name="re_url" value="{{$url}}">
+                                                        <input type="hidden" name="ck_id" value="{{$data->ck_id}}">
 
-                                                        <div class="col-sm-3">
-                                                            <label class="form-label">아래의 내용을 그대로 복사히셔서 붙여넣으세요.</label>
-                                                            <input type="text" value="/set {{$ck_id}}"disabled
+                                                        <div class="mt-3">
+                                                            <label class="form-label">업체 명</label>
+                                                            <input type="text" name="user_name" value="{{$data->user_name}}"
                                                                 class="form-control">
+                                                        </div>
+                                                        <div class=mt-3">
+                                                            <label class="form-label">업체 비밀번호 (값이 존재하면 수정되오니 주의바랍니다)</label>
+                                                            <input type="text" name="user_password" value=""
+                                                                class="form-control">
+                                                        </div>
+                                                        <div class="mt-3">
+                                                                <div class="form-group">
+                                                                    <label class="mb-3"> 수수료</label>
+                                                                    <p class="text-muted mb-3 font-13">
+                                                                        0.10 은 0.1% 입니다.
+                                                                    </p>
+                                                                       <input type="text" name="user_margin" value="{{$data->user_margin*100}}"
+                                                                class="form-control">
+                                                                </div>
+                                                            </div>
+                                                        <!--end col-->
+                                                        <div class="col-sm-1">
+                                                            <button type="submit" class="btn btn-outline-info">
+                                                                수정
+                                                            </button>
                                                         </div>
                                                         <!--end col-->
                                                     </div>
-                                                            <div class="col-sm-3">
-                                                            <label class="form-label">텔레그램 링크</label>
-                                                            <a style="color:blue" href="https://t.me/Dastone_bot" target="_blank">바로가기</a>
-                                                        </div>
+                                                    </form>
                                                     <!--end row-->
                                                 </div>
                                                 <!--end /div-->
@@ -129,6 +150,13 @@
         <script src="/plugins/daterangepicker/daterangepicker.js"></script>
 
         <!-- App js -->
+        <script src="/plugins/select2/select2.min.js"></script>
+        <script src="/plugins/huebee/huebee.pkgd.min.js"></script>
+        <script src="/plugins/timepicker/bootstrap-material-datetimepicker.js"></script>
+        <script src="/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+        <script src="/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js"></script>
+
+        <script src="/assets/pages/jquery.forms-advanced.js"></script>
         <script src="/assets/js/app.js"></script>
 
         <!-- Charge js -->
