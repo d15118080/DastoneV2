@@ -24,6 +24,7 @@ class TransactionController extends Controller
             return Return_json('9999', 1, "값이 존재하지 않습니다.", 422, null);
         }
         $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
+        $user_name = User::where('identification', $request->user()->identification)->value('user_name');
         foreach ($request->data as $row) {
             DB::beginTransaction();
 
@@ -47,6 +48,11 @@ class TransactionController extends Controller
                 return Return_json('9999', 1, "데이터 오류 가 발생하였습니다.", 400, null);
             }
         }
+        if (Telegarm_set::where('ck_id', 'admin')->exists()) {
+            $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
+            Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n*충전요청 을 하였습니다 관리자에서 확인해주세요.");
+        }
+
         return Return_json('0000', 1, "정상처리", 200, null);
     }
 
@@ -109,6 +115,8 @@ class TransactionController extends Controller
         }
         $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
         $money = User::where('identification', $request->user()->identification)->value('money');
+        $user_name = User::where('identification', $request->user()->identification)->value('user_name');
+
         if (User::where('identification', $request->user()->identification)->value('state') == 10) {
             return Return_json('9999', 1, "거래 할수없는 계정입니다.", 422, null);
         }
@@ -146,6 +154,11 @@ class TransactionController extends Controller
                 DB::rollBack();
                 return Return_json('9999', 1, "데이터 오류 가 발생하였습니다.", 400, null);
             }
+        }
+
+        if (Telegarm_set::where('ck_id', 'admin')->exists()) {
+            $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
+            Telegram_send($chat_id, "*[다스톤 출금요청]*\n*거래 요청점* : $user_name\n출금요청 을 하였습니다 관리자에서 확인해주세요.");
         }
 
         User::where('identification', $request->user()->identification)->update(['money' => $up_money]);
