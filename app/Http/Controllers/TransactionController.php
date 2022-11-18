@@ -213,7 +213,7 @@ class TransactionController extends Controller
                 User::where('identification', $pk_id)->update(['money' => $up_money]);
                 $p_ck_id = User::where('identification', $pk_id)->value('ck_id'); //지사 키
                 if (Telegarm_set::where('ck_id', $p_ck_id)->exists()) {
-                    $f_name = User::where('identification', $data->identification)->value('user_name');//가맹점 이름
+                    $f_name = User::where('identification', $data->identification)->value('user_name'); //가맹점 이름
                     $chat_id = Telegarm_set::where('ck_id', $f_ck_id)->value('chat_id');
                     $money_nu = number_format($data->amount);
                     $p_money_nu = number_format($p_money);
@@ -224,6 +224,15 @@ class TransactionController extends Controller
                 //본시 금액 업데이트
                 $up_money = $p_money_re + User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->value('money');
                 User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->update(['money' => $up_money]);
+                $e_ck_id = User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->value('ck_id'); //본사 키
+                if (Telegarm_set::where('ck_id', $e_ck_id)->exists()) {
+                    $p_name = User::where('identification', $pk_id)->value('user_name'); //지사 이름
+                    $chat_id = Telegarm_set::where('ck_id', $f_ck_id)->value('chat_id');
+                    $money_nu = number_format($data->amount);
+                    $p_money_nu = number_format($p_money_re);
+                    $up_money_nu = number_format($up_money);
+                    Telegram_send($chat_id, "*[다스톤 수수료 정산]*\n*거래 지사* : $p_name\n*거래 금액* : $money_nu\n*거래 수수료* : $p_money_nu\n*수수료 정산후 잔액* : $up_money_nu");
+                }
 
                 return redirect('/management');
             } elseif ($data->trxtype == "SS") {
