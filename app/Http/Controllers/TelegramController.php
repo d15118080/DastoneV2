@@ -16,10 +16,12 @@ class TelegramController extends Controller
         $username = $updates['message']['chat']['username'];
         $userid = $updates['message']['chat']['id'];
         $text = $updates['message']['text'];
+        $api_key = explode(' ', $text);
         $telegram->sendMessage([
             'chat_id' => $userid,
-            'text' => "[테스트 가맹점] $username($userid) 님 등록되었습니다",
+            'text' => "[테스트 가맹점] $username($userid) $api_key 님 등록되었습니다",
         ]);
+
 
     }
 }
