@@ -91,7 +91,7 @@
                                                 <td><?php echo $row->user_margin *100 ?>%</td>
                                                 <td>{{$row->count}} 개 업체</td>
                                                 <td>{{$row->user_reg_date}}</td>
-                                                @if($row->user_state == 10)
+                                                @if($row->state == 10)
                                                 <td class="text-danger">차단</td>
                                                 @else
                                                 <td class="text-info">정상</td>

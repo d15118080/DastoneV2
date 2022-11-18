@@ -460,7 +460,7 @@ class UserController extends Controller
                 //지사
             } elseif ($s == 1) {
                 User::where('id', $id)->update(['state' => 0]);
-                return redirect('/franchisees');
+                return redirect('/branchs');
             }
 
         }
