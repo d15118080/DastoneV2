@@ -86,7 +86,7 @@ const _iv_ = 'e3b6449021144a6d';
 
 function Telegram_send($token = '', $text = '')
 {
-    $mes_data = array('chat_id' => $token, 'text' => "$text", "parse_mode" => "markdown");
+    $mes_data = array('chat_id' => $token, 'text' => "$text", "parse_mode" => "html");
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
