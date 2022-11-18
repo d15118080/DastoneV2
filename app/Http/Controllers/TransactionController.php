@@ -43,12 +43,8 @@ class TransactionController extends Controller
             ]);
             if ($insert) {
                 DB::commit();
-            } else {
-                DB::rollBack();
-                return Return_json('9999', 1, "데이터 오류 가 발생하였습니다.", 400, null);
             }
         }
-
         if (Telegarm_set::where('ck_id', 'admin')->exists()) {
             $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
             Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n*충전요청 을 하였습니다 관리자에서 확인해주세요.");
