@@ -75,6 +75,10 @@
                     </ul>
                 </li>
                 @endif
+                 <li>
+                    <a href="/telegram_set"><i data-feather="bell"
+                            class="align-self-center menu-icon"></i><span>텔레그램 알림 설정</span></a>
+                </li>
             </ul>
 
             <div class="update-msg text-center">

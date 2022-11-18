@@ -18,7 +18,7 @@ class TelegramController extends Controller
         $text = $updates['message']['text'];
         $telegram->sendMessage([
             'chat_id' => $userid,
-            'text' => '테스트',
+            'text' => "[테스트 가맹점] $username($userid) 님 등록되었습니다",
         ]);
 
     }

@@ -33,6 +33,7 @@ Route::get('/branchs', [UserController::class,'branchs'])->middleware('Token_Che
 Route::get('/franchisees', [UserController::class,'franchisees']);
 
 Route::get('/franchisees_add', [UserController::class,'franchisees_add']);
+Route::get('/telegram_set', [UserController::class, 'Telegram_set']);
 
 
 Route::get('/branch_add', function () {

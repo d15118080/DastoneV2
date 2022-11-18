@@ -467,4 +467,10 @@ class UserController extends Controller
 
     }
 
+    public function Telegram_set(Request $request){
+        $HToken = base_64_end_code_de($_COOKIE['H-Token'], _key_, _iv_); //헤더 H토큰 식별값  sha256암호화 한것 디코딩
+        $ck_id = User::where([['identification', $HToken]])->value('ck_id');
+        return view('telegramset',['ck_id'=>$ck_id]);
+    }
+
 } //클래스 끝
