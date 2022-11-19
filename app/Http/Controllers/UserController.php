@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\bank;
 use App\Models\Personal_access_tokens;
+use App\Models\Telegarm_set;
 use App\Models\User;
 use App\Models\user_transaction_history_table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redis;
 
 class UserController extends Controller
 {
@@ -325,6 +325,13 @@ class UserController extends Controller
             $bank_number = $request->bank_number;
             bank::where('id', 1)->update(['bank_name' => $bank_name]);
             bank::where('id', 1)->update(['bank_number' => $bank_number]);
+            $p_users = User::where('user_state',2)->get();
+            foreach ($p_users as $row){
+                if(Telegarm_set::where('ck_id',$row->ck_id)->exists()){
+                    $chat_id = Telegarm_set::where('ck_id',$row->ck_id)->value('chat_id');
+                    Telegram_send($chat_id,"*[공지]*\n\n*입금계좌가 변동 되었습니다*\n사이트에서 확인해주세요.");
+                }
+            }
             return redirect('/bank_edit');
         }
     }
@@ -468,30 +475,31 @@ class UserController extends Controller
 
     }
 
-
-    public function User_edit(Request $request){
+    public function User_edit(Request $request)
+    {
         $user_id = $_GET['ck_id'];
         $url = $request->fullUrl();
-        $data = User::where('ck_id',$user_id)->first();
-        return view('admin_user_edit',['data'=>$data,'url'=>$url]);
+        $data = User::where('ck_id', $user_id)->first();
+        return view('admin_user_edit', ['data' => $data, 'url' => $url]);
     }
 
-        public function User_edit_req(Request $request){
+    public function User_edit_req(Request $request)
+    {
         $re_url = $request->re_url;
         $user_name = $request->user_name;
-        $user_margin = $request->user_margin/100;
+        $user_margin = $request->user_margin / 100;
         $user_password = $request->user_password;
         $ck_id = $request->ck_id;
-        $re_user_name = User::where('ck_id',$ck_id)->value('user_name');
+        $re_user_name = User::where('ck_id', $ck_id)->value('user_name');
         $re_user_margin = User::where('ck_id', $ck_id)->value('user_margin');
 
-        if($user_name != $re_user_name ){
+        if ($user_name != $re_user_name) {
             User::where('ck_id', $ck_id)->update(['user_name' => $user_name]);
         }
-        if($re_user_margin != $user_margin){
+        if ($re_user_margin != $user_margin) {
             User::where('ck_id', $ck_id)->update(['user_margin' => $user_margin]);
         }
-        if($user_password !=""){
+        if ($user_password != "") {
             $pass = Hash::make($user_password);
             User::where('ck_id', $ck_id)->update(['user_password' => $pass]);
         }
@@ -499,10 +507,11 @@ class UserController extends Controller
 
     }
 
-    public function Telegram_set(Request $request){
+    public function Telegram_set(Request $request)
+    {
         $HToken = base_64_end_code_de($_COOKIE['H-Token'], _key_, _iv_); //헤더 H토큰 식별값  sha256암호화 한것 디코딩
         $ck_id = User::where([['identification', $HToken]])->value('ck_id');
-        return view('telegramset',['ck_id'=>$ck_id]);
+        return view('telegramset', ['ck_id' => $ck_id]);
     }
 
 } //클래스 끝
