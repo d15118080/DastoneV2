@@ -282,7 +282,7 @@ class TransactionController extends Controller
                     $pmoney = $retRTP->RPAY; //입금금액
                     $tall = $retRTP->RTEXT; //전송 데이터 전문
 
-                    deposit::insrt([
+                    deposit::insert([
                         'user_name'=>$pname,
                         'money'=>$pmoney,
                         'date_ymd'=>date('Y-m-d'),
