@@ -338,7 +338,7 @@ class TransactionController extends Controller
     {
 
         $RTPay = new RTPay;
-        $RTPay->RTP_KEY = "a543e7ab-534d-40c1-9f9c-a786bbd09933"; //인증키값 설정
+        $RTPay->RTP_KEY = "7538561a-899e-4879-8eab-efe940e5bdf1"; //인증키값 설정
 
         $resultArray = array();
         $resultArray['PCHK'] = "NO";
