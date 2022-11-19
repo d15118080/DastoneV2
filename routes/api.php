@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
  */
 Route::prefix('/v1')->group(function () {
     Route::post('/telegram/hooks',[TelegramController::class,'Telegram']);
+    Route::post('/payment_noti_v1', [TransactionController::class, 'Payment_noti']);
+
+
     //사용자 Prefix
     Route::prefix('/user')->group(function () {
         Route::post('/auth_check', [UserController::class, 'Auth_Check']);
