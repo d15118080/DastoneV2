@@ -26,11 +26,82 @@ class TransactionController extends Controller
             return Return_json('9999', 1, "값이 존재하지 않습니다.", 422, null);
         }
 
-        foreach ($request->data as $row){
-            if(deposit::where([['user_name',$row['bank_user']],['money',$row['money']]])->exists()){
-                Telegram_send('1878145914', "입금자 존재함");
+        foreach ($request->data as $row) {
+            if (!deposit::where([['user_name', $row['bank_user']], ['money', $row['money'], ['state', 0]]])->exists()) {
+                return Return_json('9999', 1, "입금자 혹은 입금액이 틀리거나 내역이 존재하지 않습니다.", 422, null);
             }
         }
+        $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
+        foreach ($request->data as $row) {
+            $use_names = $row['bank_user'];
+            if (deposit::where([['user_name', $row['bank_user']], ['money', $row['money'], ['state', 0]]])->exists()) {
+                user_transaction_history_table::insert([
+                    'pk_id' => $pk_id,
+                    'identification' => $request->user()->identification,
+                    'tradeNumber' => get_uuid_v1(),
+                    'trxtype' => "CO",
+                    'user_name' => $row['bank_user'],
+                    'virtual_account' => "A",
+                    'amount' => $row['money'],
+                    'balance' => "",
+                    'date_ymd' => date('Y-m-d'),
+                    'date_time' => date('H:i:s'),
+                    'company_name' => $request->user()->user_name,
+                ]);
+
+                $f_mar = User::where('identification',  $request->user()->identification)->value('user_margin'); //가맹점 마진
+                $pk_id = User::where('identification',  $request->user()->identification)->value('pk_id'); //가맹점 연결 지사
+                $p_mar = User::where('identification', $pk_id)->value('user_margin'); //지사 마진
+
+                $f_money_re = $row['money'] * $f_mar; // 가맹점 수수료 빼기
+                $f_money = $row['money'] - $f_money_re; //가맹점 실 적립 금액
+
+                $p_money_re = $row['money'] * $p_mar; // 지사 수수료 (본사에게 올려줘야 할것)
+                $p_money = $f_money_re - $p_money_re; //실 지사 적립금
+
+                //가맹점 금액 업데이트
+                $up_money = $f_money + User::where('identification', $request->user()->identification)->value('money');
+                User::where('identification', $request->user()->identification)->update(['money' => $up_money]);
+                $f_ck_id = User::where('identification', $request->user()->identification)->value('ck_id'); //가맹점 키
+                if (Telegarm_set::where('ck_id', $f_ck_id)->exists()) {
+                    $chat_id = Telegarm_set::where('ck_id', $f_ck_id)->value('chat_id');
+                    $money_nu = number_format($row['money']);
+                    $up_money_nu = number_format($up_money);
+                    $f_money_re_nu = number_format($f_money_re);
+                    Telegram_send($chat_id, "*[다스톤 충전완료]*\n*입금자* : $use_names \n*입금 금액* : $money_nu 원\n*수수료*:$f_money_re_nu 원\n*입금후 잔액* : $up_money_nu 원");
+                }
+
+                //지사 금액 업데이트
+                $up_money = $p_money + User::where('identification', $pk_id)->value('money');
+                User::where('identification', $pk_id)->update(['money' => $up_money]);
+                $p_ck_id = User::where('identification', $pk_id)->value('ck_id'); //지사 키
+                if (Telegarm_set::where('ck_id', $p_ck_id)->exists()) {
+                    $f_name = User::where('identification', $request->user()->identification)->value('user_name'); //가맹점 이름
+                    $chat_id = Telegarm_set::where('ck_id', $f_ck_id)->value('chat_id');
+                    $money_nu = number_format($row['money']);
+                    $p_money_nu = number_format($p_money);
+                    $up_money_nu = number_format($up_money);
+                    Telegram_send($chat_id, "*[다스톤 수수료 정산]*\n*거래 가맹점* : $f_name\n*거래 금액* : $money_nu 원\n*거래 수수료* : $p_money_nu 원\n*수수료 정산후 잔액* : $up_money_nu 원");
+                }
+
+                //본시 금액 업데이트
+                $up_money = $p_money_re + User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->value('money');
+                User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->update(['money' => $up_money]);
+                $e_ck_id = User::where('identification', 'DS_7b0d4a37-5552-49f1-9cfb-a466')->value('ck_id'); //본사 키
+                if (Telegarm_set::where('ck_id', $e_ck_id)->exists()) {
+                    $p_name = User::where('identification', $pk_id)->value('user_name'); //지사 이름
+                    $chat_id = Telegarm_set::where('ck_id', $f_ck_id)->value('chat_id');
+                    $money_nu = number_format($row['money']);
+                    $p_money_nu = number_format($p_money_re);
+                    $up_money_nu = number_format($up_money);
+                    Telegram_send($chat_id, "*[다스톤 수수료 정산]*\n*거래 지사* : $p_name\n*거래 금액* : $money_nu 원\n*거래 수수료* : $p_money_nu 원\n*수수료 정산후 잔액* : $up_money_nu 원");
+                }
+
+            }
+            deposit::where([['user_name', $row['bank_user']], ['money', $row['money'], ['state', 0]]])->update(['state' => 1]);
+
+        }
+
         // $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
         // $user_name = $request->user()->user_name;
         // if (Telegarm_set::where('ck_id', 'admin')->exists()) {
@@ -266,7 +337,7 @@ class TransactionController extends Controller
     public function Payment_noti(Request $request)
     {
 
-        $RTPay= new RTPay;
+        $RTPay = new RTPay;
         $RTPay->RTP_KEY = "a543e7ab-534d-40c1-9f9c-a786bbd09933"; //인증키값 설정
 
         $resultArray = array();
@@ -289,11 +360,11 @@ class TransactionController extends Controller
                     $tall = $retRTP->RTEXT; //전송 데이터 전문
 
                     deposit::insert([
-                        'user_name'=>$pname,
-                        'money'=>$pmoney,
-                        'state'=>0,
-                        'date_ymd'=>date('Y-m-d'),
-                        'date_time'=>date('H:i:s')
+                        'user_name' => $pname,
+                        'money' => $pmoney,
+                        'state' => 0,
+                        'date_ymd' => date('Y-m-d'),
+                        'date_time' => date('H:i:s'),
                     ]);
                     $resultArray['PCHK'] = "OK";
                     //========================== 인증키값 설정과 이 부분만 고쳐주세요. =======================
