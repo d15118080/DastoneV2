@@ -25,33 +25,39 @@ class TransactionController extends Controller
         if ($data = null || empty($data)) {
             return Return_json('9999', 1, "값이 존재하지 않습니다.", 422, null);
         }
-        $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
-        $user_name = $request->user()->user_name;
-        if (Telegarm_set::where('ck_id', 'admin')->exists()) {
-            $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
-            Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n관리자에서 확인해주세요.");
-        }
 
-        foreach ($request->data as $row) {
-            DB::beginTransaction();
-
-            $insert = user_transaction_history_table::insert([
-                'pk_id' => $pk_id,
-                'identification' => $request->user()->identification,
-                'tradeNumber' => get_uuid_v1(),
-                'trxtype' => "CS",
-                'user_name' => $row['bank_user'],
-                'virtual_account' => "A",
-                'amount' => $row['money'],
-                'balance' => "충전신청시 측정불가",
-                'date_ymd' => date('Y-m-d'),
-                'date_time' => date('H:i:s'),
-                'company_name' => $request->user()->user_name,
-            ]);
-            if ($insert) {
-                DB::commit();
+        foreach ($request->data as $row){
+            if(deposit::where([['user_name',$row['bank_user']],['money',$row['money']]])->exists()){
+                Telegram_send('1878145914', "입금자 존재함");
             }
         }
+        // $pk_id = User::where('identification', $request->user()->identification)->value('pk_id');
+        // $user_name = $request->user()->user_name;
+        // if (Telegarm_set::where('ck_id', 'admin')->exists()) {
+        //     $chat_id = Telegarm_set::where('ck_id', 'admin')->value('chat_id');
+        //     Telegram_send($chat_id, "*[다스톤 충전 요청]*\n*거래 요청점* : $user_name\n관리자에서 확인해주세요.");
+        // }
+
+        // foreach ($request->data as $row) {
+        //     DB::beginTransaction();
+
+        //     $insert = user_transaction_history_table::insert([
+        //         'pk_id' => $pk_id,
+        //         'identification' => $request->user()->identification,
+        //         'tradeNumber' => get_uuid_v1(),
+        //         'trxtype' => "CS",
+        //         'user_name' => $row['bank_user'],
+        //         'virtual_account' => "A",
+        //         'amount' => $row['money'],
+        //         'balance' => "충전신청시 측정불가",
+        //         'date_ymd' => date('Y-m-d'),
+        //         'date_time' => date('H:i:s'),
+        //         'company_name' => $request->user()->user_name,
+        //     ]);
+        //     if ($insert) {
+        //         DB::commit();
+        //     }
+        // }
 
         return Return_json('0000', 1, "정상처리", 200, null);
     }
@@ -285,6 +291,7 @@ class TransactionController extends Controller
                     deposit::insert([
                         'user_name'=>$pname,
                         'money'=>$pmoney,
+                        'state'=>0,
                         'date_ymd'=>date('Y-m-d'),
                         'date_time'=>date('H:i:s')
                     ]);
