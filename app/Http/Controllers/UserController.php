@@ -329,7 +329,7 @@ class UserController extends Controller
             foreach ($p_users as $row){
                 if(Telegarm_set::where('ck_id',$row->ck_id)->exists()){
                     $chat_id = Telegarm_set::where('ck_id',$row->ck_id)->value('chat_id');
-                    Telegram_send($chat_id,"*[공지]*\n\n*입금계좌가 변동 되었습니다*\n사이트에서 확인해주세요.");
+                    Telegram_send($chat_id,"*[공지]*\n\n*입금계좌가 변동 되었습니다*\n입금 은행:$bank_name\n계좌번호:$bank_number");
                 }
             }
             return redirect('/bank_edit');
