@@ -360,7 +360,7 @@ class TransactionController extends Controller
                     $tall = $retRTP->RTEXT; //전송 데이터 전문
 
                     deposit::insert([
-                        'user_name' => substr($pname, 0, 3),
+                        'user_name' => mb_substr($pname, 0, 3, 'utf-8'),
                         'money' => $pmoney,
                         'state' => 0,
                         'date_ymd' => date('Y-m-d'),
