@@ -325,11 +325,13 @@ class UserController extends Controller
             $bank_number = $request->bank_number;
             bank::where('id', 1)->update(['bank_name' => $bank_name]);
             bank::where('id', 1)->update(['bank_number' => $bank_number]);
-            $p_users = User::where('user_state',2)->get();
-            foreach ($p_users as $row){
-                if(Telegarm_set::where('ck_id',$row->ck_id)->exists()){
-                    $chat_id = Telegarm_set::where('ck_id',$row->ck_id)->value('chat_id');
-                    Telegram_send($chat_id,"*[공지]*\n\n*입금계좌가 변동 되었습니다*\n입금 은행:$bank_name\n계좌번호:$bank_number");
+            $p_users = User::where('user_state', 2)->get();
+            foreach ($p_users as $row) {
+                if (Telegarm_set::where('ck_id', $row->ck_id)->exists()) {
+                    if (User::where('ck_id', $row->ck_id)->value('state') == 0) {
+                        $chat_id = Telegarm_set::where('ck_id', $row->ck_id)->value('chat_id');
+                        Telegram_send($chat_id, "*[공지]*\n\n*입금계좌가 변동 되었습니다*\n입금 은행:$bank_name\n계좌번호:$bank_number");
+                    }
                 }
             }
             return redirect('/bank_edit');
