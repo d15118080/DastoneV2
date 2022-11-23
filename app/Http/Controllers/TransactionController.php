@@ -98,7 +98,7 @@ class TransactionController extends Controller
                 }
 
             }
-            deposit::where([['user_name', $row['bank_user']], ['money', $row['money'], ['state', 0]]])->update(['state' => 1]);
+            deposit::where([['user_name', $row['bank_user']], ['money', $row['money'], ['state', 0]]])->delete();
 
         }
 
